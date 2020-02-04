@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -40,6 +41,6 @@ def vote(request, question_id):
         # Снова показываем форму с вопросом и выборами ответов
         return render(request, 'mysite/detail.html', {'question': question, 'error_message': "Вариант ответа выбери, э!"})
     else:
-        selected_choice.votes += 1
-        selected_choice.save()
+        # Добавил F(), чтобы избежать race conditions
+        selected_choice.votes = F('votes') + 1
         return HttpResponseRedirect(reverse('mysite:results', args=(question_id,)))
