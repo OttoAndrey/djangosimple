@@ -16,6 +16,26 @@ def create_question(question_text, days):
     return Question.objects.create(question_text=question_text, pub_date=time)
 
 
+class QuestionResultsViewTests(TestCase):
+    def test_future_question(self):
+        """
+        results view вопроса с датой будущей публикации вернет 404.
+        """
+        future_question = create_question(question_text='Future question.', days=5)
+        url = reverse('mysite:results', args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_past_question(self):
+        """
+        results view вопроса с датой публикации в прошлом отображает результаты вопроса.
+        """
+        past_question = create_question(question_text='Past question.', days=-5)
+        url = reverse('mysite:results', args=(past_question.id,))
+        response = self.client.get(url)
+        self.assertContains(response, past_question)
+
+
 class QuestionDetailViewTests(TestCase):
     def test_future_question(self):
         """
