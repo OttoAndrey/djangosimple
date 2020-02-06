@@ -1,7 +1,7 @@
 from django.test import TestCase
 import datetime
 from django.utils import timezone
-from .models import Question
+from .models import Question, Choice
 from django.urls import reverse
 
 
@@ -14,6 +14,13 @@ def create_question(question_text, days):
     """
     time = timezone.now() + datetime.timedelta(days=days)
     return Question.objects.create(question_text=question_text, pub_date=time)
+
+
+def create_choice(question, choice_text):
+    """
+    Создаёт вариант ответа с переданным вопросом и текстом ответа.
+    """
+    return Choice.objects.create(question=question, choice_text=choice_text)
 
 
 class QuestionResultsViewTests(TestCase):
@@ -31,9 +38,10 @@ class QuestionResultsViewTests(TestCase):
         results view вопроса с датой публикации в прошлом отображает результаты вопроса.
         """
         past_question = create_question(question_text='Past question.', days=-5)
+        choice = create_choice(question=past_question, choice_text='Choice')
         url = reverse('mysite:results', args=(past_question.id,))
         response = self.client.get(url)
-        self.assertContains(response, past_question)
+        self.assertContains(response, choice.choice_text)
 
 
 class QuestionDetailViewTests(TestCase):
@@ -50,7 +58,8 @@ class QuestionDetailViewTests(TestCase):
         """
         detail view вопроса с датой публикации в прошлом отображает текст вопроса.
         """
-        past_question = create_question(question_text='Past Question.', days=-5)
+        past_question = create_question(question_text='Past question.', days=-5)
+        create_choice(question=past_question, choice_text='Choice')
         url = reverse('mysite:detail', args=(past_question.id,))
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
@@ -70,7 +79,8 @@ class QuestionIndexViewTests(TestCase):
         """
         Вопросы с pub_date в прошлом отображаются на главной странице.
         """
-        create_question(question_text="Past question.", days=-30)
+        past_question = create_question(question_text="Past question.", days=-30)
+        create_choice(question=past_question, choice_text='Choice')
         response = self.client.get(reverse('mysite:index'))
         self.assertQuerysetEqual(
             response.context['latest_question_list'],
@@ -81,7 +91,8 @@ class QuestionIndexViewTests(TestCase):
         """
         Вопросы с pub_date в будущем не отображаются на главной странице.
         """
-        create_question(question_text="Future question.", days=30)
+        future_question = create_question(question_text="Future question.", days=30)
+        create_choice(question=future_question, choice_text='Choice')
         response = self.client.get(reverse('mysite:index'))
         self.assertContains(response, "Доступных вопросов нет.")
         self.assertQuerysetEqual(response.context['latest_question_list'], [])
@@ -90,8 +101,10 @@ class QuestionIndexViewTests(TestCase):
         """
         Если существуют прошлые вопросы и будущие, только прошлые вопросы отображаются.
         """
-        create_question(question_text="Past question.", days=-30)
-        create_question(question_text="Future question.", days=30)
+        past_question = create_question(question_text="Past question.", days=-30)
+        future_question = create_question(question_text="Future question.", days=30)
+        create_choice(question=past_question, choice_text='Past choice')
+        create_choice(question=future_question, choice_text='Future choice')
         response = self.client.get(reverse('mysite:index'))
         self.assertQuerysetEqual(
             response.context['latest_question_list'],
@@ -102,8 +115,10 @@ class QuestionIndexViewTests(TestCase):
         """
         Главная страница с вопросами может отображать несколько вопросов.
         """
-        create_question(question_text="Past question 1.", days=-30)
-        create_question(question_text="Past question 2.", days=-5)
+        past_question_1 = create_question(question_text="Past question 1.", days=-30)
+        past_question_2 = create_question(question_text="Past question 2.", days=-5)
+        create_choice(question=past_question_1, choice_text='Past choice')
+        create_choice(question=past_question_2, choice_text='Past choice')
         response = self.client.get(reverse('mysite:index'))
         self.assertQuerysetEqual(
             response.context['latest_question_list'],

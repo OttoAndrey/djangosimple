@@ -15,7 +15,7 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_question_list'
 
     def get_queryset(self):
-        return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
+        return Question.objects.filter(pub_date__lte=timezone.now()).exclude(choice=None).order_by('-pub_date')[:5]
 
 
 def testpage(request):
@@ -27,7 +27,7 @@ class DetailView(generic.DetailView):
     template_name = 'mysite/detail.html'
 
     def get_queryset(self):
-        return Question.objects.filter(pub_date__lte=timezone.now())
+        return Question.objects.filter(pub_date__lte=timezone.now()).exclude(choice=None)
 
 
 class ResultsView(generic.DetailView):
@@ -35,7 +35,7 @@ class ResultsView(generic.DetailView):
     template_name = 'mysite/results.html'
 
     def get_queryset(self):
-        return Question.objects.filter(pub_date__lte=timezone.now())
+        return Question.objects.filter(pub_date__lte=timezone.now()).exclude(choice=None)
 
 
 def vote(request, question_id):
