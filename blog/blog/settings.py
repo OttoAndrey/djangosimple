@@ -31,13 +31,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'mysite.apps.MysiteConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'simpleblog.apps.SimpleblogConfig',
+    'mysite.apps.MysiteConfig',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +76,12 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
+    # For tests.
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+
     # 'default': {
     #             'ENGINE': 'django.db.backends.postgresql',
     #             'NAME': os.environ['DATABASE_NAME'],
@@ -84,20 +91,14 @@ DATABASES = {
     #             'PORT': '5432',
     # }
 
-    # For tests.
     # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
-
-    'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': os.environ['DATABASE_NAME'],
-                'USER': os.environ['USER'],
-                'PASSWORD': os.environ['PASSWORD'],
-                'HOST': os.environ['HOST'],
-                'PORT': '5432',
-    }
+    #             'ENGINE': 'django.db.backends.postgresql',
+    #             'NAME': 'df20v61sghjosb',
+    #             'USER': 'snnmxxxdqlcxnh',
+    #             'PASSWORD': '8f3eee7a3d3df72b7821f5caac80787c2e2ee3b364164227574f6bf344473555',
+    #             'HOST': 'ec2-46-137-91-216.eu-west-1.compute.amazonaws.com',
+    #             'PORT': '5432',
+    #     }
 }
 
 
@@ -140,5 +141,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Configure Django App for Heroku.
-import django_heroku
-django_heroku.settings(locals())
+# import django_heroku
+# django_heroku.settings(locals())
