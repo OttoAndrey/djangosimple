@@ -78,28 +78,19 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 
 DATABASES = {
     # For tests.
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    #'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #}
 
-    # 'default': {
-    #             'ENGINE': 'django.db.backends.postgresql',
-    #             'NAME': os.environ['DATABASE_NAME'],
-    #             'USER': os.environ['USER'],
-    #             'PASSWORD': os.environ['PASSWORD'],
-    #             'HOST': os.environ['HOST'],
-    #             'PORT': '5432',
-    # }
-
-    # 'default': {
-    #             'ENGINE': 'django.db.backends.postgresql',
-    #             'NAME': 'df20v61sghjosb',
-    #             'USER': 'snnmxxxdqlcxnh',
-    #             'PASSWORD': '8f3eee7a3d3df72b7821f5caac80787c2e2ee3b364164227574f6bf344473555',
-    #             'HOST': 'ec2-46-137-91-216.eu-west-1.compute.amazonaws.com',
-    #             'PORT': '5432',
-    #     }
+     'default': {
+                  'ENGINE': 'django.db.backends.postgresql',
+                  'NAME': os.environ['DATABASE_NAME'],
+                  'USER': os.environ['USER'],
+                  'PASSWORD': os.environ['PASSWORD'],
+                  'HOST': os.environ['HOST'],
+                  'PORT': '5432',
+     }
 }
 
 
