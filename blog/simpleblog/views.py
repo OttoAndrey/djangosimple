@@ -4,9 +4,11 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from taggit.models import Tag
 
-from .forms import EmailPostForm, CommentForm
+from .forms import EmailPostForm, CommentForm, SearchForm
 from .models import Post
 from django.db.models import Count
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import TrigramSimilarity
 
 
 class PostListView(ListView):
@@ -64,8 +66,9 @@ def post_detail(request, year, month, day, post):
     similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
     similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
 
-    return render(request, 'simpleblog/post/detail.html', {'post': post, 'comments': comments, 'new_comment': new_comment,
-                                                           'comment_form': comment_form, 'similar_posts': similar_posts})
+    return render(request, 'simpleblog/post/detail.html',
+                  {'post': post, 'comments': comments, 'new_comment': new_comment,
+                   'comment_form': comment_form, 'similar_posts': similar_posts})
 
 
 def post_share(request, post_id):
@@ -88,3 +91,19 @@ def post_share(request, post_id):
     else:
         form = EmailPostForm()
     return render(request, 'simpleblog/post/share.html', {'post': post, 'form': form, 'sent': sent})
+
+
+def post_search(request):
+    form = SearchForm()
+    query = None
+    results = []
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Post.objects.annotate(similarity=TrigramSimilarity('title', query),
+                                            ).filter(similarity__gt=0.3).order_by('-similarity')
+    return render(request, 'simpleblog/post/search.html',
+                  {'form': form,
+                   'query': query,
+                   'results': results})
