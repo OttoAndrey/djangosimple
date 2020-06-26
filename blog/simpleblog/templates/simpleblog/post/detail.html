@@ -1,4 +1,5 @@
 {% extends "simpleblog/base.html" %}
+{% load simpleblog_tags %}
 
 {% block title %}{{ post.title }}{% endblock %}
 
@@ -8,7 +9,7 @@
     <p class="date">
         Published {{ post.publish }} by {{ post.author }}
     </p>
-    {{ post.body|linebreaks }}
+    {{ post.body|markdown }}
 
     <p>
         <a href="{% url 'simpleblog:post_share' post.id %}">
