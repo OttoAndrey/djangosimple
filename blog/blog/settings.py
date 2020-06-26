@@ -27,6 +27,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['djangosimple.herokuapp.com']
 
+SITE_ID = 1
 
 # Application definition
 
@@ -40,6 +41,9 @@ INSTALLED_APPS = [
     'simpleblog.apps.SimpleblogConfig',
     'mysite.apps.MysiteConfig',
     'taggit',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
+    'django.contrib.postgres'
 ]
 
 MIDDLEWARE = [
